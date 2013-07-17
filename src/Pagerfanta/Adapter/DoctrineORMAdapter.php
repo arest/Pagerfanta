@@ -74,8 +74,16 @@ class DoctrineORMAdapter implements AdapterInterface
      */
     public function getSlice($offset, $length)
     {
-        $this->paginator
-            ->getQuery()
+        $query = $this->paginator
+                    ->getQuery()
+        ;
+
+        $query->useResultCache(
+                true, 
+                60,
+                __METHOD__.serialize($query->getParameters())
+            )
+            ->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_OBJECT)
             ->setFirstResult($offset)
             ->setMaxResults($length);
 
